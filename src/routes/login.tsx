@@ -1,9 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { AuthLayout } from "@/components/auth-layout";
 import { Field, inputCls } from "@/components/site";
 import { Button } from "@/components/ui/button";
+import { OAuthButtons } from "@/components/oauth-buttons";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/login")({
@@ -13,11 +17,17 @@ export const Route = createFileRoute("/login")({
 
 function Login() {
   const nav = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
   const [err, setErr] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
-  const submit = (e: React.FormEvent) => {
+
+  useEffect(() => {
+    if (!authLoading && user) nav({ to: "/account", replace: true });
+  }, [authLoading, user, nav]);
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const x: Record<string, string> = {};
     if (!/^\S+@\S+\.\S+$/.test(email)) x.email = "Enter a valid email address";
@@ -25,11 +35,19 @@ function Login() {
     setErr(x);
     if (Object.keys(x).length) return;
     setLoading(true);
-    setTimeout(() => nav({ to: "/account" }), 900);
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pw });
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    nav({ to: "/account" });
   };
+
   return (
     <AuthLayout title="Welcome back" sub="Sign in to view your keys and downloads.">
-      <form onSubmit={submit} className="space-y-4" noValidate>
+      <OAuthButtons />
+      <form onSubmit={submit} className="mt-4 space-y-4" noValidate>
         <Field label="Email" error={err.email}><input aria-invalid={!!err.email} className={inputCls} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /></Field>
         <Field label="Password" error={err.pw}><input type="password" aria-invalid={!!err.pw} className={inputCls} value={pw} onChange={(e) => setPw(e.target.value)} placeholder="••••••••" /></Field>
         <div className="text-right"><Link to="/forgot-password" className="text-xs text-primary-glow hover:underline">Forgot password?</Link></div>

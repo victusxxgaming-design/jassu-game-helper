@@ -3,6 +3,7 @@ import { useState } from "react";
 import { LayoutGrid, Package, Receipt, KeyRound, Download, UserCog, LifeBuoy, Copy, ArrowRight, MessageCircle, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { Shell, ProductArt, Status, Field, inputCls } from "@/components/site";
+import { RequireAuth } from "@/components/require-auth";
 import { Button } from "@/components/ui/button";
 import { ORDERS, getProduct, fakeKey, money } from "@/lib/data";
 import { seo } from "@/lib/seo";
@@ -10,7 +11,11 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/account")({
   head: () => seo("My account", "Your Vantix dashboard: purchases, orders, keys and downloads."),
-  component: Account,
+  component: () => (
+    <RequireAuth>
+      <Account />
+    </RequireAuth>
+  ),
 });
 
 const TABS = [
