@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Search, ShoppingBag, User, Menu, X, Monitor, Apple, Smartphone, Boxes, MessageCircle, Star } from "lucide-react";
+import { Search, ShoppingBag, User, Menu, X, Monitor, Apple, Boxes, MessageCircle, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
 import { platformLabel, money, type Product, type Platform } from "@/lib/data";
@@ -98,7 +98,7 @@ export function Footer() {
         ))}
       </div>
       <div className="border-t">
-        <p className="container-x py-6 text-xs text-muted-foreground">© 2026 Vantix Digital. Independent store — not affiliated with, endorsed by, or sponsored by Garena or Free Fire. Prototype with sample data.</p>
+        <p className="container-x py-6 text-xs text-muted-foreground">© 2026 Vantix Digital. Independent store — not affiliated with, endorsed by, or sponsored by Garena or Free Fire.</p>
       </div>
     </footer>
   );
