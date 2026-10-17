@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Search, ShoppingBag, User, Menu, X, Monitor, Apple, Boxes, MessageCircle, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
+import { useAuth } from "@/lib/auth";
 import { platformLabel, money, type Product, type Platform } from "@/lib/data";
 import { consumeMorph } from "@/lib/morph";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,7 @@ const NAV = [
 
 export function Header() {
   const { items } = useCart();
+  const { user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const nav = useNavigate();
@@ -66,7 +68,14 @@ export function Header() {
             {NAV.map((n) => (
               <Link key={n.label} to="/store" search={n.platform ? { platform: n.platform } : {}} onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm hover:bg-surface">{n.label}</Link>
             ))}
-            <Link to="/login" onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm hover:bg-surface">Sign in</Link>
+            {user ? (
+              <>
+                <Link to="/account" onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm hover:bg-surface">My account</Link>
+                <button onClick={() => { setOpen(false); void signOut(); }} className="rounded-lg px-3 py-3 text-left text-sm hover:bg-surface">Sign out</button>
+              </>
+            ) : (
+              <Link to="/login" onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm hover:bg-surface">Sign in</Link>
+            )}
           </div>
         </div>
       )}
