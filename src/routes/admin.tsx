@@ -3,6 +3,7 @@ import React, { useMemo, useState } from "react";
 import { LayoutDashboard, Package, Layers, Tags, Receipt, ShieldCheck, KeyRound, Users, TicketPercent, BarChart3, Settings, Search, Plus, Upload, Pencil, ArrowUpRight, Ban, ExternalLink, Menu } from "lucide-react";
 import { toast } from "sonner";
 import { Logo, Status, Pill, Field, inputCls, platformIcon } from "@/components/site";
+import { RequireAuth } from "@/components/require-auth";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { PRODUCTS, PLATFORMS, platformLabel, money, fakeKey, type Product } from "@/lib/data";
@@ -10,7 +11,11 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Vantix" }, { name: "description", content: "Vantix store administration prototype." }, { property: "og:title", content: "Admin — Vantix" }, { property: "og:description", content: "Store administration prototype." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
-  component: Admin,
+  component: () => (
+    <RequireAuth admin>
+      <Admin />
+    </RequireAuth>
+  ),
 });
 
 const NAV = [

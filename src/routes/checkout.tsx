@@ -8,10 +8,15 @@ import { getProduct, money } from "@/lib/data";
 import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import { Summary, FEE_RATE } from "@/components/summary";
+import { RequireAuth } from "@/components/require-auth";
 
 export const Route = createFileRoute("/checkout")({
   head: () => seo("Checkout", "Secure checkout for your Vantix order."),
-  component: Checkout,
+  component: () => (
+    <RequireAuth>
+      <Checkout />
+    </RequireAuth>
+  ),
 });
 
 const METHODS = [
