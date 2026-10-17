@@ -1,9 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Zap, ShieldCheck, Headphones, Info, Sparkles, Monitor, Apple, Boxes } from "lucide-react";
+import { ArrowRight, Sparkles, Monitor, Apple, Boxes } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Shell, ProductCard, DiscordCTA, platformIcon, Pill, Reveal } from "@/components/site";
-import { PRODUCTS, PLATFORMS, FAQS, type Platform } from "@/lib/data";
+import { Shell, DiscordCTA, Pill, Reveal } from "@/components/site";
+import { PRODUCTS, type Platform } from "@/lib/data";
 import { morphToPage } from "@/lib/morph";
 import { seo } from "@/lib/seo";
 import hero from "@/assets/hero.jpg";
@@ -21,8 +20,6 @@ const LOOKING: { id: Platform; title: string; blurb: string; icon: typeof Monito
 
 function Index() {
   const nav = useNavigate();
-  const featured = PRODUCTS.slice(0, 4);
-  const latest = [...PRODUCTS].slice(0, 3);
   return (
     <Shell>
       <section className="relative overflow-hidden border-b">
@@ -89,81 +86,7 @@ function Index() {
         </div>
       </section>
 
-      <section className="container-x mt-20">
-        <div className="flex items-end justify-between mb-8">
-          <div><p className="eyebrow">Featured</p><h2 className="mt-2 text-2xl md:text-4xl font-bold uppercase">Popular addons</h2></div>
-          <Link to="/store" className="text-sm text-primary-glow hover:underline flex items-center gap-1">View all <ArrowRight className="h-4 w-4" /></Link>
-        </div>
-        <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">{featured.map((p) => <ProductCard key={p.slug} p={p} />)}</div>
-      </section>
-
-      <section className="container-x mt-24">
-        <p className="eyebrow">Platforms</p>
-        <h2 className="mt-2 mb-8 text-2xl md:text-4xl font-bold uppercase">Shop by platform</h2>
-        <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-          {PLATFORMS.map((pl) => {
-            const Icon = platformIcon(pl.id);
-            const count = PRODUCTS.filter((p) => p.platform === pl.id).length;
-            return (
-              <Link key={pl.id} to="/store" search={{ platform: pl.id }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  morphToPage(e.currentTarget, pl.label, () => nav({ to: "/store", search: { platform: pl.id } }));
-                }}
-                className="surface panel-hover panel-corners group p-6">
-                <Icon className="h-6 w-6 text-primary-glow" />
-                <p className="mt-10 font-display text-xl font-semibold">{pl.label}</p>
-                <p className="text-sm text-muted-foreground">{pl.blurb}</p>
-                <p className="mt-4 text-xs text-muted-foreground flex items-center gap-1 group-hover:text-foreground">{count} products <ArrowRight className="h-3 w-3" /></p>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="container-x mt-24">
-        <p className="eyebrow">Just updated</p>
-        <h2 className="mt-2 mb-8 text-2xl md:text-4xl font-bold uppercase">Latest versions</h2>
-        <div className="surface divide-y">
-          {latest.map((p) => (
-            <Link key={p.slug} to="/product/$slug" params={{ slug: p.slug }} className="flex items-center gap-4 p-5 hover:bg-surface-2 transition">
-              <span className="font-mono text-sm text-primary-glow w-16 shrink-0">v{p.version}</span>
-              <div className="min-w-0 flex-1"><p className="font-medium truncate">{p.name}</p><p className="text-sm text-muted-foreground truncate">{p.notes[0]}</p></div>
-              <span className="hidden sm:block text-xs text-muted-foreground">{p.released}</span>
-              <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="container-x mt-24 grid gap-4 md:grid-cols-3">
-        {[
-          [Info, "Clear product info", "Compatibility, requirements and release notes on every page — no guesswork."],
-          [Zap, "Instant delivery", "Your activation key and download appear the moment payment clears."],
-          [Headphones, "Real support", "Humans on tickets and Discord, 7 days a week, with fast replies."],
-        ].map(([Icon, t, d]) => {
-          const I = Icon as typeof Zap;
-          return (
-            <div key={t as string} className="surface panel-hover p-7">
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-primary/15"><I className="h-5 w-5 text-primary-glow" /></span>
-              <h3 className="mt-6 text-lg font-semibold">{t as string}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{d as string}</p>
-            </div>
-          );
-        })}
-      </section>
-
       <DiscordCTA />
-
-      <section className="container-x mt-24 grid gap-10 md:grid-cols-[1fr_2fr]">
-        <div><p className="eyebrow">FAQ</p><h2 className="mt-2 text-2xl md:text-4xl font-bold uppercase">Questions, answered</h2>
-          <p className="mt-3 text-muted-foreground flex items-center gap-2"><ShieldCheck className="h-4 w-4" />Secure checkout</p></div>
-        <Accordion type="single" collapsible className="surface px-6">
-          {FAQS.map((f, i) => (
-            <AccordionItem key={i} value={`f${i}`}><AccordionTrigger>{f.q}</AccordionTrigger><AccordionContent className="text-muted-foreground">{f.a}</AccordionContent></AccordionItem>
-          ))}
-        </Accordion>
-      </section>
     </Shell>
   );
 }
