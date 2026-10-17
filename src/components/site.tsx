@@ -7,7 +7,7 @@ import { platformLabel, money, type Product, type Platform } from "@/lib/data";
 import { consumeMorph } from "@/lib/morph";
 import { cn } from "@/lib/utils";
 
-export const platformIcon = (p: Platform) => ({ pc: Monitor, ios: Apple, android: Smartphone, other: Boxes })[p];
+export const platformIcon = (p: Platform) => ({ pc: Monitor, ios: Apple, other: Boxes })[p];
 
 export function Logo() {
   return (
@@ -24,7 +24,6 @@ const NAV = [
   { label: "Store", platform: undefined },
   { label: "PC", platform: "pc" },
   { label: "iOS", platform: "ios" },
-  { label: "Android", platform: "android" },
 ] as const;
 
 export function Header() {
@@ -232,7 +231,7 @@ export function DiscordCTA() {
         <div className="relative flex flex-col md:flex-row md:items-center gap-6 justify-between">
           <div>
             <p className="eyebrow">Community</p>
-            <h2 className="mt-2 text-2xl md:text-3xl font-semibold">Join 24,000+ players on Discord</h2>
+            <h2 className="mt-2 text-2xl md:text-3xl font-semibold">Join us on Discord</h2>
             <p className="mt-2 text-muted-foreground max-w-lg">Release announcements, setup help and live support from our team.</p>
           </div>
           <Button variant="hero" size="lg"><MessageCircle />Join Discord</Button>

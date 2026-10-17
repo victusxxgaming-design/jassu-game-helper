@@ -12,10 +12,10 @@ type S = { platform?: Platform; q?: string };
 
 export const Route = createFileRoute("/store")({
   validateSearch: (s: Record<string, unknown>): S => ({
-    platform: ["pc", "ios", "android", "other"].includes(s.platform as string) ? (s.platform as Platform) : undefined,
+    platform: ["pc", "ios", "other"].includes(s.platform as string) ? (s.platform as Platform) : undefined,
     q: typeof s.q === "string" && s.q ? s.q : undefined,
   }),
-  head: () => seo("Store", "Browse every Vantix addon for PC, iOS, Android and more. Latest versions only."),
+  head: () => seo("Store", "Browse every Vantix addon for PC, iOS and more. Latest versions only."),
   component: Store,
 });
 

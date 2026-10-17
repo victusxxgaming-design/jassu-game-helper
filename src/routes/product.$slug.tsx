@@ -85,7 +85,7 @@ function ProductPage() {
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">{p.features.map((f) => <li key={f} className="flex gap-2 text-sm"><Check className="h-4 w-4 text-success" />{f}</li>)}</ul>
           </TabsContent>
           <TabsContent value="requirements" className="surface p-8 mt-4 grid gap-4 sm:grid-cols-3 text-sm">
-            {[["OS", p.platform === "ios" ? "iOS 17+" : p.platform === "android" ? "Android 11+" : "Windows 10/11 64-bit"], ["Storage", "120 MB free"], ["Memory", "4 GB RAM recommended"]].map(([k, v]) => <div key={k}><p className="text-muted-foreground">{k}</p><p className="mt-1 font-medium">{v}</p></div>)}
+            {[["OS", p.platform === "ios" ? "iOS 17+" : "Windows 10/11 64-bit"], ["Storage", "120 MB free"], ["Memory", "4 GB RAM recommended"]].map(([k, v]) => <div key={k}><p className="text-muted-foreground">{k}</p><p className="mt-1 font-medium">{v}</p></div>)}
           </TabsContent>
           <TabsContent value="install" className="surface p-8 mt-4">
             <ol className="space-y-4 text-sm">{["Complete checkout and open your order page.", "Copy your activation key.", "Download the latest package from the order page.", "Run the installer and paste your key when prompted."].map((s, i) => (

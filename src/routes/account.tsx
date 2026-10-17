@@ -21,16 +21,14 @@ type Tab = (typeof TABS)[number][0];
 
 function Account() {
   const [tab, setTab] = useState<Tab>("overview");
-  const [empty, setEmpty] = useState(false);
-  const orders = empty ? [] : ORDERS;
+  const orders = ORDERS;
   const owned = orders.filter((o) => o.payment === "paid").flatMap((o) => o.items.map((s) => ({ p: getProduct(s)!, o })));
 
   return (
     <Shell>
       <div className="container-x py-10">
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div><p className="eyebrow">Dashboard</p><h1 className="mt-2 text-3xl font-semibold">Hey, Alex</h1></div>
-          <label className="flex items-center gap-2 text-xs text-muted-foreground"><input type="checkbox" checked={empty} onChange={(e) => setEmpty(e.target.checked)} className="accent-primary" />Preview new-customer state</label>
+          <div><p className="eyebrow">Dashboard</p><h1 className="mt-2 text-3xl font-semibold">Your dashboard</h1></div>
         </div>
         <div className="mt-8 grid gap-8 lg:grid-cols-[220px_1fr]">
           <nav className="flex lg:flex-col gap-1 overflow-x-auto pb-2 lg:pb-0">

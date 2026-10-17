@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { LayoutDashboard, Package, Layers, Tags, Receipt, ShieldCheck, KeyRound, Users, TicketPercent, BarChart3, Settings, Search, Plus, Upload, Pencil, ArrowUpRight, Ban, ExternalLink, Menu } from "lucide-react";
 import { toast } from "sonner";
 import { Logo, Status, Pill, Field, inputCls, platformIcon } from "@/components/site";
@@ -20,12 +20,9 @@ const NAV = [
 ] as const;
 type Sec = (typeof NAV)[number][0];
 
-const ORDERS = Array.from({ length: 10 }).map((_, i) => {
-  const p = PRODUCTS[i % PRODUCTS.length];
-  const pay = (["paid", "paid", "pending", "paid", "failed", "paid", "refunded", "paid", "pending", "paid"] as const)[i];
-  return { id: `VX-${20520 - i * 13}`, customer: ["alex@example.com", "mira@mail.io", "kenji@web.jp", "sofia@mail.br", "dev@ops.in"][i % 5], product: p, total: p.price, pay, method: ["Card", "UPI", "PayPal", "Crypto"][i % 4], date: `Oct ${17 - i}, 2026` };
-});
-const KEYS = Array.from({ length: 10 }).map((_, i) => ({ key: fakeKey("k" + i), product: PRODUCTS[i % 4], status: (["active", "unassigned", "active", "expired", "unassigned", "revoked", "active", "unassigned", "active", "expired"] as const)[i], order: i % 3 === 1 ? "—" : `VX-${20500 - i * 7}`, expires: `Oct ${10 + i}, 2027` }));
+type AdminOrder = { id: string; customer: string; product: Product; total: number; pay: string; method: string; date: string };
+const ORDERS: AdminOrder[] = [];
+const KEYS: { key: string; product: Product; status: string; order: string; expires: string }[] = [];
 
 function Admin() {
   const [sec, setSec] = useState<Sec>("overview");
@@ -48,7 +45,7 @@ function Admin() {
         <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b bg-background/80 px-6 backdrop-blur">
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMobile(true)}><Menu /></Button>
           <h1 className="text-lg font-semibold">{NAV.find((n) => n[0] === sec)![1]}</h1>
-          <div className="ml-auto flex items-center gap-3"><span className="hidden sm:block text-xs text-muted-foreground">Prototype · sample data</span><span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-primary text-xs font-semibold text-primary-foreground">VA</span></div>
+          <div className="ml-auto flex items-center gap-3"><span className="hidden sm:block text-xs text-muted-foreground">Admin</span><span className="grid h-8 w-8 place-items-center rounded-full bg-gradient-primary text-xs font-semibold text-primary-foreground">VA</span></div>
         </header>
         <main className="p-6">
           {sec === "overview" && <Overview go={setSec} />}
@@ -70,28 +67,24 @@ function Admin() {
 
 const Card = ({ className, children }: { className?: string; children: React.ReactNode }) => <div className={cn("surface p-5", className)}>{children}</div>;
 function Table({ head, children }: { head: string[]; children: React.ReactNode }) {
-  return <div className="surface overflow-x-auto"><table className="w-full text-sm"><thead className="text-left text-xs text-muted-foreground"><tr className="border-b">{head.map((h) => <th key={h} className="px-4 py-3 font-medium whitespace-nowrap">{h}</th>)}</tr></thead><tbody className="divide-y [&_td]:px-4 [&_td]:py-3 [&_tr:hover]:bg-surface-2">{children}</tbody></table></div>;
+  return <div className="surface overflow-x-auto"><table className="w-full text-sm"><thead className="text-left text-xs text-muted-foreground"><tr className="border-b">{head.map((h) => <th key={h} className="px-4 py-3 font-medium whitespace-nowrap">{h}</th>)}</tr></thead><tbody className="divide-y [&_td]:px-4 [&_td]:py-3 [&_tr:hover]:bg-surface-2">{React.Children.count(children) === 0 || (Array.isArray(children) && children.length === 0) ? <tr><td colSpan={head.length} className="text-center text-muted-foreground">Nothing here yet</td></tr> : children}</tbody></table></div>;
 }
 function Stat({ k, v, d }: { k: string; v: string; d: string }) {
   return <Card><p className="text-sm text-muted-foreground">{k}</p><p className="mt-2 font-display text-3xl font-semibold">{v}</p><p className="mt-1 flex items-center gap-1 text-xs text-success"><ArrowUpRight className="h-3 w-3" />{d}</p></Card>;
 }
-const SALES = [42, 55, 48, 70, 66, 82, 74, 91, 88, 104, 97, 120, 112, 134];
+const SALES: number[] = Array(14).fill(0);
 function Bars() {
-  const max = Math.max(...SALES);
+  const max = Math.max(1, ...SALES);
   return <div className="flex h-48 items-end gap-2">{SALES.map((s, i) => <div key={i} className="flex-1 rounded-t-md bg-gradient-primary opacity-80 transition hover:opacity-100" style={{ height: `${(s / max) * 100}%` }} title={`$${s * 10}`} />)}</div>;
 }
 
 function Overview({ go }: { go: (s: Sec) => void }) {
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><Stat k="Revenue (30d)" v="$18,420" d="+12.4%" /><Stat k="Orders" v="1,284" d="+8.1%" /><Stat k="Customers" v="24,310" d="+3.2%" /><Stat k="Active products" v={String(PRODUCTS.length)} d="+2 this month" /></div>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><Stat k="Revenue (30d)" v="$0.00" d="—" /><Stat k="Orders" v="0" d="—" /><Stat k="Customers" v="0" d="—" /><Stat k="Active products" v={String(PRODUCTS.length)} d="—" /></div>
       <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-        <Card><div className="flex justify-between mb-6"><h2 className="font-semibold">Sales · last 14 days</h2><Pill tone="success">+18%</Pill></div><Bars /></Card>
-        <Card><h2 className="font-semibold mb-4">Needs attention</h2><ul className="space-y-3 text-sm">
-          <li className="flex justify-between"><span>Pending payments</span><Status s="pending" /></li>
-          <li className="flex justify-between"><span>Low key inventory · Prism Vault</span><Status s="low" /></li>
-          <li className="flex justify-between"><span>Out of stock · Halo Kit</span><Status s="out" /></li>
-        </ul><Button variant="outline" size="sm" className="mt-6" onClick={() => go("payments")}>Review payments</Button></Card>
+        <Card><div className="flex justify-between mb-6"><h2 className="font-semibold">Sales · last 14 days</h2></div><Bars /></Card>
+        <Card><h2 className="font-semibold mb-4">Needs attention</h2><p className="text-sm text-muted-foreground">Nothing needs attention.</p><Button variant="outline" size="sm" className="mt-6" onClick={() => go("payments")}>Review payments</Button></Card>
       </div>
       <h2 className="font-semibold">Recent orders</h2><OrdersSec limit={5} />
     </div>
@@ -143,9 +136,13 @@ function ProductDialog({ p, onClose }: { p: Product | "new" | null; onClose: () 
 }
 
 function Versions() {
+  if (PRODUCTS.length === 0) return <Card><p className="text-sm text-muted-foreground">No products yet. Add a product first.</p></Card>;
+  return <VersionsInner />;
+}
+function VersionsInner() {
   const [sel, setSel] = useState(PRODUCTS[0].slug); const p = PRODUCTS.find((x) => x.slug === sel)!;
   const [maj, min, pat] = p.version.split(".").map(Number);
-  const vers = [{ v: p.version, s: "current", d: p.released, n: p.notes }, { v: `${maj}.${min}.${Math.max(0, pat - 1)}`, s: "archived", d: "Sep 2, 2026", n: ["Stability fixes"] }, { v: `${maj}.${Math.max(0, min - 1)}.0`, s: "archived", d: "Jul 18, 2026", n: ["Major layout update"] }];
+  const vers = [{ v: p.version, s: "current", d: p.released, n: p.notes }, ];
   return (
     <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
       <div className="space-y-4">
@@ -192,7 +189,7 @@ function Payments() {
   const [done, setDone] = useState<Record<string, string>>({});
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-4">{[["paid", "Verified", 7], ["pending", "Awaiting", 2], ["failed", "Failed", 1], ["refunded", "Refunded", 1]].map(([s, l, n]) => <Card key={s as string}><Status s={s as string} /><p className="mt-3 font-display text-2xl font-semibold">{n}</p><p className="text-xs text-muted-foreground">{l as string}</p></Card>)}</div>
+      <div className="grid gap-4 sm:grid-cols-4">{[["paid", "Verified", ORDERS.filter((o) => o.pay === "paid").length], ["pending", "Awaiting", ORDERS.filter((o) => o.pay === "pending").length], ["failed", "Failed", ORDERS.filter((o) => o.pay === "failed").length], ["refunded", "Refunded", ORDERS.filter((o) => o.pay === "refunded").length]].map(([s, l, n]) => <Card key={s as string}><Status s={s as string} /><p className="mt-3 font-display text-2xl font-semibold">{n}</p><p className="text-xs text-muted-foreground">{l as string}</p></Card>)}</div>
       <div className="space-y-3">{pending.map((o) => (
         <Card key={o.id} className="flex flex-wrap items-center gap-4">
           <div className="min-w-0 flex-1"><p className="font-mono text-sm">{o.id} · {o.method}</p><p className="text-xs text-muted-foreground">{o.customer} · {money(o.total)}</p></div>
@@ -222,7 +219,7 @@ function Keys() {
 
 function Customers() {
   return <Table head={["Customer", "Email", "Orders", "Spent", "Joined", "Status"]}>
-    {[["Alex Rivera", "alex@example.com", 5, 63.9, "Mar 2025"], ["Mira Chen", "mira@mail.io", 3, 41.5, "Jun 2025"], ["Kenji Sato", "kenji@web.jp", 8, 112.4, "Jan 2025"], ["Sofia Lima", "sofia@mail.br", 1, 9.99, "Oct 2026"], ["Dev Patel", "dev@ops.in", 2, 24.98, "Aug 2026"]].map(([n, e, o, s, j]) => (
+    {([] as [string, string, number, number, string][]).map(([n, e, o, s, j]) => (
       <tr key={e as string}><td className="font-medium">{n}</td><td className="text-muted-foreground">{e}</td><td>{o}</td><td>{money(s as number)}</td><td className="text-muted-foreground">{j}</td><td><Status s="active" /></td></tr>
     ))}
   </Table>;
@@ -231,7 +228,7 @@ function Customers() {
 function Coupons() {
   return <div className="space-y-4"><Button variant="hero" onClick={() => toast("New coupon (demo)")}><Plus />Create coupon</Button>
     <Table head={["Code", "Discount", "Uses", "Expires", "Status"]}>
-      {[["VANTIX10", "10%", "412 / ∞", "Dec 31, 2026", "active"], ["DROP25", "25%", "200 / 200", "Oct 1, 2026", "expired"], ["WELCOME5", "$5.00", "88 / 500", "—", "active"]].map(([c, d, u, e, s]) => <tr key={c}><td className="font-mono">{c}</td><td>{d}</td><td>{u}</td><td className="text-muted-foreground">{e}</td><td><Status s={s} /></td></tr>)}
+      {([] as [string, string, string, string, string][]).map(([c, d, u, e, s]) => <tr key={c}><td className="font-mono">{c}</td><td>{d}</td><td>{u}</td><td className="text-muted-foreground">{e}</td><td><Status s={s} /></td></tr>)}
     </Table></div>;
 }
 
@@ -239,9 +236,9 @@ function Analytics() {
   return <div className="grid gap-6 xl:grid-cols-2">
     <Card><h2 className="font-semibold mb-6">Revenue trend</h2><Bars /></Card>
     <Card><h2 className="font-semibold mb-4">Top products</h2><ul className="space-y-4">{[...PRODUCTS].sort((a, b) => b.sales - a.sales).slice(0, 5).map((p) => (
-      <li key={p.slug}><div className="flex justify-between text-sm"><span>{p.name}</span><span className="text-muted-foreground">{p.sales.toLocaleString()}</span></div><div className="mt-1.5 h-1.5 rounded-full bg-muted"><div className="h-full rounded-full bg-gradient-primary" style={{ width: `${(p.sales / 5410) * 100}%` }} /></div></li>
+      <li key={p.slug}><div className="flex justify-between text-sm"><span>{p.name}</span><span className="text-muted-foreground">{p.sales.toLocaleString()}</span></div><div className="mt-1.5 h-1.5 rounded-full bg-muted"><div className="h-full rounded-full bg-gradient-primary" style={{ width: `${(p.sales / Math.max(1, ...PRODUCTS.map((x) => x.sales))) * 100}%` }} /></div></li>
     ))}</ul></Card>
-    <Card><h2 className="font-semibold mb-4">Sales by platform</h2><div className="grid grid-cols-4 gap-3 text-center">{PLATFORMS.map((p) => <div key={p.id}><p className="font-display text-2xl font-semibold">{Math.round(PRODUCTS.filter((x) => x.platform === p.id).reduce((s, x) => s + x.sales, 0) / 280)}%</p><p className="text-xs text-muted-foreground">{p.label}</p></div>)}</div></Card>
+    <Card><h2 className="font-semibold mb-4">Sales by platform</h2><div className="grid grid-cols-3 gap-3 text-center">{PLATFORMS.map((p) => <div key={p.id}><p className="font-display text-2xl font-semibold">{Math.round(PRODUCTS.filter((x) => x.platform === p.id).reduce((s, x) => s + x.sales, 0) / 280)}%</p><p className="text-xs text-muted-foreground">{p.label}</p></div>)}</div></Card>
   </div>;
 }
 
@@ -249,6 +246,6 @@ function SettingsSec() {
   return <div className="grid gap-6 xl:grid-cols-2">
     <Card className="space-y-4"><h2 className="font-semibold">Store settings</h2><Field label="Store name"><input className={inputCls} defaultValue="Vantix" /></Field><Field label="Currency"><select className={inputCls}><option>USD</option><option>INR</option><option>BRL</option></select></Field><Field label="Tax / fee rate (%)"><input className={inputCls} defaultValue="5" /></Field>
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" className="accent-primary" />Maintenance mode</label><Button variant="hero" onClick={() => toast.success("Settings saved")}>Save</Button></Card>
-    <Card className="space-y-4"><h2 className="font-semibold">Support settings</h2><Field label="Support email"><input className={inputCls} defaultValue="support@vantix.example" /></Field><Field label="Discord invite URL"><input className={inputCls} defaultValue="https://discord.gg/vantix-demo" /></Field><Field label="Auto-reply message"><textarea className={cn(inputCls, "h-24 py-2")} defaultValue="Thanks for reaching out — we'll reply within a few hours." /></Field><Button variant="hero" onClick={() => toast.success("Settings saved")}>Save</Button></Card>
+    <Card className="space-y-4"><h2 className="font-semibold">Support settings</h2><Field label="Support email"><input className={inputCls} placeholder="support@yourstore.com" /></Field><Field label="Discord invite URL"><input className={inputCls} placeholder="https://discord.gg/..." /></Field><Field label="Auto-reply message"><textarea className={cn(inputCls, "h-24 py-2")} defaultValue="Thanks for reaching out — we'll reply within a few hours." /></Field><Button variant="hero" onClick={() => toast.success("Settings saved")}>Save</Button></Card>
   </div>;
 }
