@@ -4,7 +4,7 @@ import { CheckCircle2, Copy, Check, Download, Clock, KeyRound, AlertTriangle, XC
 import { toast } from "sonner";
 import { Shell, ProductArt, Status, Pill } from "@/components/site";
 import { Button } from "@/components/ui/button";
-import { getProduct, fakeKey, money } from "@/lib/data";
+import { PRODUCTS, fakeKey, money } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 type KeyState = "success" | "pending" | "unavailable" | "expired" | "failed";
@@ -19,7 +19,8 @@ export const Route = createFileRoute("/order/$id")({
 function Order() {
   const { id } = Route.useParams();
   const { state } = Route.useSearch();
-  const p = getProduct("obsidian-hud")!;
+  const p = PRODUCTS[0];
+  if (!p) return <Shell><div className="container-x py-24 max-w-xl text-center"><h1 className="text-3xl font-semibold">Order not found</h1><p className="mt-2 text-muted-foreground">We couldn't find order {id}.</p><Button className="mt-6" variant="outline" asChild><Link to="/store">Browse the store</Link></Button></div></Shell>;
   const key = fakeKey(id);
   const [copied, setCopied] = useState(false);
   const copy = async () => { try { await navigator.clipboard.writeText(key); } catch { /* demo */ } setCopied(true); toast.success("Key copied"); setTimeout(() => setCopied(false), 1800); };

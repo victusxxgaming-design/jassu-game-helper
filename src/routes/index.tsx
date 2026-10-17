@@ -34,13 +34,13 @@ function Index() {
           <h1 className="mt-6 max-w-2xl text-4xl sm:text-5xl md:text-7xl font-bold uppercase leading-[0.95] tracking-tight">
             Booyah-ready panels,<br /><span className="text-gradient">built for survivors.</span>
           </h1>
-          <p className="mt-6 max-w-lg text-lg text-muted-foreground">HUDs, sensitivity suites and visual packs for PC, iOS and Android. Always the latest version, delivered instantly.</p>
+          <p className="mt-6 max-w-lg text-lg text-muted-foreground">HUDs, sensitivity suites and visual packs for PC and iOS. Always the latest version, delivered instantly.</p>
           <div className="mt-10 flex flex-wrap gap-3">
             <Button variant="hero" size="lg" asChild><Link to="/store">Shop now <ArrowRight /></Link></Button>
             <Button variant="outline" size="lg" asChild><Link to="/about">How it works</Link></Button>
           </div>
           <div className="mt-14 inline-flex flex-wrap gap-6 sm:gap-10 rounded-xl border bg-background/50 px-6 py-4 text-sm backdrop-blur">
-            {[["24k+", "Customers"], ["4.8★", "Avg. rating"], ["<1 min", "Delivery"]].map(([a, b]) => (
+            {[["<1 min", "Delivery"]].map(([a, b]) => (
               <div key={b}><p className="font-display text-2xl font-bold">{a}</p><p className="text-muted-foreground">{b}</p></div>
             ))}
           </div>
